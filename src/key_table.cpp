@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "key_table.h"
 #include "Utils.h"
+#include <EEPROM.h>
 
 key_data_t key_table[MAX_KEYS_COUNT];
 
@@ -47,4 +48,16 @@ void keytable_fill_by_default() {
     FOR_EACH(key_table, i) {
         keytable_set_default(i);
     }
+}
+
+void keytable_save_to_EEPROM() {
+    EEPROM.put(0, key_table);
+}
+
+void keytable_load_from_EEPROM() {
+    EEPROM.get(0, key_table);
+}
+
+void keytable_reset() {
+    memset(&key_table, 0, sizeof(key_table));
 }

@@ -28,3 +28,7 @@ void keytable_output_item(uint8_t i);
 
 // Вывод всей таблицы
 void keytable_output_all();
+
+void keytable_save_to_EEPROM();
+void keytable_load_from_EEPROM();
+void keytable_reset();

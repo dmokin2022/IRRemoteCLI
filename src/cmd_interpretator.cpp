@@ -23,7 +23,7 @@ enum {
 // Интерпретатор команд
 void cmd_interpretate(CommandHandler_t* cmd)
 {
-
+	// Вывод отладочных данных
 	if (DEBUG) {
 		FOR_(4, i) {
 			char buff[50];
@@ -31,7 +31,8 @@ void cmd_interpretate(CommandHandler_t* cmd)
 			Serial.println(buff);
 		}
 	}
-	
+
+	bool command_is_executed = true;
 	int button = atoi(cmd->words[BUTTON]);	// Определяем номер кнопки 
 	int value = atoi(cmd->words[VALUE]);	// ... значение параметра
 
@@ -46,13 +47,23 @@ void cmd_interpretate(CommandHandler_t* cmd)
 		if (EQUAL(PARAMETER, "mode")) { 
 			key_table[button].mode = value;
 			if (value == 0) {
-				if (EQUAL(VALUE, "toggle")) {  } else
-				if (EQUAL(VALUE, "hold")) {  } else
-				if (EQUAL(VALUE, "repeat")) {  }
+				if (EQUAL(VALUE, "toggle")) { key_table[button].mode = MODE_TOGGLE; } else
+				if (EQUAL(VALUE, "hold")) { key_table[button].mode = MODE_HOLD; } else
+				if (EQUAL(VALUE, "repeat")) { key_table[button].mode = MODE_REPEAT; }
 			}
+		} else
+		if (EQUAL(PARAMETER, "name")) {
+			strncpy(key_table[button].name, cmd->words[VALUE], MAX_SIMBOLS_IN_WORD);
+			// Проверка длины названия кнопки
+			// if (strlen(cmd->words[VALUE]) <= MAX_SIMBOLS_IN_WORD) {
+			// 	strcpy(key_table[button].name, cmd->words[VALUE]);
+			// }
 		}
 	} else 
 	if (EQUAL(COMMAND, "get")) {
+		// PRINTLN("найдена команда get");
+		// PRINTLN(button);
+		// Если код кнопки задан (!= 0)
 		if (button) {
 			if (EQUAL(PARAMETER, "id")) { PRINTLN(key_table[button].id);  }
 			if (EQUAL(PARAMETER, "code")) { PRINTLN(key_table[button].code);  }
@@ -60,6 +71,7 @@ void cmd_interpretate(CommandHandler_t* cmd)
 			if (EQUAL(PARAMETER, "val")) { PRINTLN(key_table[button].var_val);  }
 			if (EQUAL(PARAMETER, "step")) { PRINTLN(key_table[button].var_step);  }
 			if (EQUAL(PARAMETER, "ref")) { PRINTLN(key_table[button].var_ref);  }
+			if (EQUAL(PARAMETER, "name")) { PRINTLN(key_table[button].name);  }
 			if (EQUAL(PARAMETER, "mode")) { 
 				switch (key_table[button].mode) {
 					MODE_TOGGLE: PRINTLN("toggle"); break;
@@ -74,10 +86,32 @@ void cmd_interpretate(CommandHandler_t* cmd)
 	} else
 	if (EQUAL(COMMAND, "capture") || EQUAL(COMMAND, "scan")) {
 
+	} else 
+	if (EQUAL(COMMAND, "save")) {
+		PRINT("Table size in bytes: ");
+		PRINTLN(sizeof(key_table));
+		keytable_save_to_EEPROM();
+		PRINTLN("Table is saved");
+ 
+	} else 
+	if (EQUAL(COMMAND, "load")) {
+		keytable_load_from_EEPROM();
+		PRINTLN("Table is loaded");
+	} else
+	if (EQUAL(COMMAND, "reset")) {
+		keytable_reset();
+		PRINTLN("Table is cleared");
+	} else 
+	
+	{
+		// Если ни одна команда не выполнена
+		command_is_executed = false;	
 	}
 
-	
 
-
-	cmd_outputMessage(cmd, "Unknown command");
+	if (command_is_executed) {
+		cmd_outputMessage(cmd, "Ok");
+	} else {
+		cmd_outputMessage(cmd, "Unknown command");
+	}
 }
