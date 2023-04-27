@@ -1,3 +1,4 @@
+#pragma once
 #ifndef REMOTEPULT_H
 #define REMOTEPULT_H
 
@@ -19,6 +20,7 @@ class RemotePult: public IRrecv  {
             state = KEY_NO;
             lastButtonCode = -1;
             key_table = _key_table;
+            //rows_in_keytable = size_of_keytable/sizeof(key_data_t);
             rows_in_keytable = _rows_in_keytable;
         }
 

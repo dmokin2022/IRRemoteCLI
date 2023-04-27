@@ -1,9 +1,10 @@
+#include <Arduino.h>
+#include <stdio.h>
+
 #include "cmd_interpretator.h"
 #include "cmd_var_access.h"
 #include "Utils.h"
 #include "config.h"
-#include <Arduino.h>
-#include <stdio.h>
 #include "key_table.h"
 
 
@@ -20,17 +21,19 @@ enum {
 #define IS_EMPTY(i) (cmd->words[i][0] == 0)
 #define WORD(i) cmd->words[i]
 
-// Интерпретатор команд
-void cmd_interpretate(CommandHandler_t* cmd)
-{
-	// Вывод отладочных данных
-	if (DEBUG) {
+void cmd_show_debug_info(CommandHandler_t* cmd) {
 		FOR_(4, i) {
 			char buff[50];
 			sprintf(buff, "%d: %s - %d", i, cmd->words[i], strlen(cmd->words[i]));
 			Serial.println(buff);
 		}
-	}
+}
+
+// Интерпретатор команд
+void cmd_interpretate(CommandHandler_t* cmd)
+{
+	// Вывод отладочных данных
+	if (DEBUG) cmd_show_debug_info(cmd);
 
 	bool command_is_executed = true;
 	int button = atoi(cmd->words[BUTTON]);	// Определяем номер кнопки 
@@ -54,10 +57,6 @@ void cmd_interpretate(CommandHandler_t* cmd)
 		} else
 		if (EQUAL(PARAMETER, "name")) {
 			strncpy(key_table[button].name, cmd->words[VALUE], MAX_SIMBOLS_IN_WORD);
-			// Проверка длины названия кнопки
-			// if (strlen(cmd->words[VALUE]) <= MAX_SIMBOLS_IN_WORD) {
-			// 	strcpy(key_table[button].name, cmd->words[VALUE]);
-			// }
 		}
 	} else 
 	if (EQUAL(COMMAND, "get")) {
@@ -65,13 +64,13 @@ void cmd_interpretate(CommandHandler_t* cmd)
 		// PRINTLN(button);
 		// Если код кнопки задан (!= 0)
 		if (button) {
-			if (EQUAL(PARAMETER, "id")) { PRINTLN(key_table[button].id);  }
-			if (EQUAL(PARAMETER, "code")) { PRINTLN(key_table[button].code);  }
-			if (EQUAL(PARAMETER, "pin")) { PRINTLN(key_table[button].pin);  }
-			if (EQUAL(PARAMETER, "val")) { PRINTLN(key_table[button].var_val);  }
-			if (EQUAL(PARAMETER, "step")) { PRINTLN(key_table[button].var_step);  }
-			if (EQUAL(PARAMETER, "ref")) { PRINTLN(key_table[button].var_ref);  }
-			if (EQUAL(PARAMETER, "name")) { PRINTLN(key_table[button].name);  }
+			if (EQUAL(PARAMETER, "id")) { PRINTLN(key_table[button].id);  } else
+			if (EQUAL(PARAMETER, "code")) { PRINTLN(key_table[button].code);  } else
+			if (EQUAL(PARAMETER, "pin")) { PRINTLN(key_table[button].pin);  } else
+			if (EQUAL(PARAMETER, "val")) { PRINTLN(key_table[button].var_val);  } else
+			if (EQUAL(PARAMETER, "step")) { PRINTLN(key_table[button].var_step);  } else
+			if (EQUAL(PARAMETER, "ref")) { PRINTLN(key_table[button].var_ref);  } else
+			if (EQUAL(PARAMETER, "name")) { PRINTLN(key_table[button].name);  } else
 			if (EQUAL(PARAMETER, "mode")) { 
 				switch (key_table[button].mode) {
 					MODE_TOGGLE: PRINTLN("toggle"); break;

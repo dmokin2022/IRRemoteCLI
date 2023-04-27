@@ -1,8 +1,5 @@
 #pragma once
-//#include "ControllerNet.h"
-//#include "cmd.h"
-//#include "main.h"
-//#include "stm32f7xx_hal_uart.h"
+
 #include <Arduino.h>
 #include "config.h"
 
