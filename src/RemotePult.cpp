@@ -3,6 +3,17 @@
 #include "Utils.h"
 #include "pins_reaction.h"
 
+
+RemotePult::RemotePult(int _recvpin, key_data_t* _key_table, uint8_t _rows_in_keytable) {            
+            ir = new IRrecv(_recvpin);
+            state = KEY_NO;
+            lastButtonCode = -1;
+            key_table = _key_table;
+            //rows_in_keytable = size_of_keytable/sizeof(key_data_t);
+            rows_in_keytable = _rows_in_keytable;
+        }
+
+
 // Поиск совпадения кода нажатой кнопки со значениями в таблице
 uint8_t RemotePult::findPositionInTable(uint32_t _buttonCode) {
     uint8_t i;
@@ -26,8 +37,11 @@ void RemotePult::process() {
     if (key_table == 0) return;
     
     // Если данные пришли
-    if (decode()) {
-        newButtonCode = decodedIRData.decodedRawData;
+    //if (ir->decode()) {
+    decode_results results;
+    if (ir->decode(&results)) {
+        newButtonCode = results.value;
+        //newButtonCode = ir->decodedIRData.decodedRawData;
             
         // Сохранение времени последнего прихода данных
         lastButtonTime = millis();
@@ -53,7 +67,7 @@ void RemotePult::process() {
             //debug(buttonPositionInTable);
             onButtonAutorepeat(buttonPositionInTable);
         }
-        resume(); // принимаем следующую команду
+        ir->resume(); // принимаем следующую команду
     
     // Если данные не приходили
     } else {

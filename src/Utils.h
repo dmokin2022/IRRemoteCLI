@@ -85,7 +85,7 @@
 
 #define FOR_(n, i)          for (int i = 0; i < n; i++)
 #define FOR_EVERY(array, i) for (int i = 0; i < (sizeof(array)/sizeof(array[0])); i++)
-#define FOR_EACH(array, i) for (int i = 0; i < (sizeof(array)/sizeof(array[0])); i++)
+#define FOR_EACH(array, i) for (int i = 0; i < (int)(sizeof(array)/sizeof(array[0])); i++)
 
 // Макрос для вставки в структуру символьного имени и его текстового строки
 #define CODANTEX(code) code, #code

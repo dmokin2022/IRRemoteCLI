@@ -33,7 +33,7 @@ void cmd_show_debug_info(CommandHandler_t* cmd) {
 void cmd_interpretate(CommandHandler_t* cmd)
 {
 	// Вывод отладочных данных
-	if (DEBUG) cmd_show_debug_info(cmd);
+	if (CMD_DEBUG) cmd_show_debug_info(cmd);
 
 	bool command_is_executed = true;
 	int button = atoi(cmd->words[BUTTON]);	// Определяем номер кнопки 
