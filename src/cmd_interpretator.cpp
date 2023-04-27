@@ -2,7 +2,6 @@
 #include <stdio.h>
 
 #include "cmd_interpretator.h"
-#include "cmd_var_access.h"
 #include "Utils.h"
 #include "config.h"
 #include "key_table.h"

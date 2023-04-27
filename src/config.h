@@ -12,8 +12,8 @@
 // Настройки для пульта
 #define AUTOREPEAT_PERIOD_MS 200
 #define MAX_KEYS_COUNT  20
+#define MAX_KEY_NAME_SIZE 20
 #define IR_RECEIVER_PIN 2
-
 
 
 

@@ -4,10 +4,12 @@
 #include <EEPROM.h>
 
 key_data_t key_table[MAX_KEYS_COUNT];
+uint8_t currentCapturedKeyIndex;    // индекс текущей позиции в таблице для записи кодов клавишь
 
 void keytable_output_item(uint8_t i) {
     PRINT("id = "); PRINT(key_table[i].id); PRINT(" ");
-    PRINT("code = "); PRINT(key_table[i].code); PRINT(" ");
+    //PRINT("code = "); PRINT(key_table[i].code); PRINT(" ");
+    PRINT("code = "); keytable_output_hex(key_table[i].code); PRINT(" ");
     PRINT("name = "); PRINT(key_table[i].name); PRINT(" ");
     PRINT("mode = "); PRINT(key_table[i].mode); PRINT(" ");
     PRINT("pin = "); PRINT(key_table[i].pin); PRINT(" ");
@@ -51,6 +53,7 @@ void keytable_fill_by_default() {
 }
 
 void keytable_save_to_EEPROM() {
+    //EEPROM.write(0, currentCapturedKeyIndex);
     EEPROM.put(0, key_table);
 }
 
@@ -60,4 +63,34 @@ void keytable_load_from_EEPROM() {
 
 void keytable_reset() {
     memset(&key_table, 0, sizeof(key_table));
+    currentCapturedKeyIndex = 1;
+}
+
+void keytable_init() {
+    keytable_load_from_EEPROM();
+    currentCapturedKeyIndex = 1;
+}
+
+void keytable_add_key(uint32_t code) {
+    // Запись кода кнопки в таблицу (остальные параметры по умолчанию)
+    if (currentCapturedKeyIndex < MAX_KEYS_COUNT) {
+        keytable_set_default(currentCapturedKeyIndex);
+        key_table[currentCapturedKeyIndex].code = code;
+        keytable_generate_name_for_key(currentCapturedKeyIndex);
+       
+        currentCapturedKeyIndex++;
+        PRINT("Key "); PRINT(code); PRINTLN(" is added to table");
+    } else {
+        PRINTLN("Key table is full. Delete any old key to add new one.");
+    }
+}
+
+void keytable_generate_name_for_key(uint8_t number) {
+    char buff[MAX_SIMBOLS_IN_WORD];
+    sprintf(buff, "BUT_%u", number);
+    strncpy(key_table[currentCapturedKeyIndex].name, buff, MAX_SIMBOLS_IN_WORD);
+}
+
+void keytable_output_hex(uint32_t code) {
+    Serial.println( code, HEX );
 }

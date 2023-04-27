@@ -14,6 +14,11 @@ enum keyStates {
     KEY_RELEASED
 };
 
+enum receiverModes {
+    RMODE_GENERATE,
+    RMODE_CAPTURE,
+};
+
 #define NOT_FOUND -1
 
 //class RemotePult: public IRrecv  {
@@ -25,6 +30,8 @@ class RemotePult  {
     	RemotePult (int recvpin, int blinkpin);
         void process();
 
+
+
         IRrecv* ir;
     protected:
     private:
@@ -32,9 +39,11 @@ class RemotePult  {
         
         key_data_t* key_table;    // указетель на таблицу кодов кнопок и обработчиков
         uint8_t rows_in_keytable;    // размер таблицы в строках
+        uint8_t mode;   // режим работы модуля пульта (захват/сканирование, генерация)
         keyStates state;  // состояние нажатия кнопки. Определяетя keyStates
         //decode_results results; // структура для хранения результатов приёма с пульта
         uint32_t newButtonCode;
+        uint8_t currentCapturedKeyIndex; 
         uint32_t lastButtonCode;  // код последней нажаток кнопки
         uint32_t lastButtonTime;  // время нажатия последней кнопки
         uint32_t timeEllapsed;      // время прошедшее с последней нажатой кнопки
@@ -45,5 +54,7 @@ class RemotePult  {
         void onButtonPressed(uint8_t button);
         void onButtonReleased(uint8_t button);
         void onButtonAutorepeat(uint8_t button);
+        void generateOutputPinSignal();
+        void captureInputIRSignal();
 };
 #endif // REMOTEPULT_H

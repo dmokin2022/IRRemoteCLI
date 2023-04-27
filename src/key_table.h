@@ -13,7 +13,7 @@ enum {
 typedef struct _key_data {
     uint8_t id; //Номер кнопки
     uint32_t code;  //Код нажатия
-    char name[20];   //Название кнопки
+    char name[MAX_KEY_NAME_SIZE];   //Название кнопки
     uint8_t mode;   //Режим нажатия (togle hold repeat)
     uint16_t pin;   //Номер ножки
 		
@@ -22,14 +22,16 @@ typedef struct _key_data {
     int8_t var_ref;     // индекс связанной переменной в массиве кнопок
 } key_data_t;
 
-
 extern key_data_t key_table[MAX_KEYS_COUNT];
 
 void keytable_output_item(uint8_t i);
 
-// Вывод всей таблицы
-void keytable_output_all();
-
+void keytable_output_all(); // Вывод всей таблицы
+void keytable_set_default(int item);
 void keytable_save_to_EEPROM();
 void keytable_load_from_EEPROM();
 void keytable_reset();
+void keytable_init();
+void keytable_add_key(uint32_t code);
+void keytable_output_hex(uint32_t code);
+void keytable_generate_name_for_key(uint8_t number);

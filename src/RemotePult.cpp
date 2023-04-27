@@ -5,13 +5,16 @@
 
 
 RemotePult::RemotePult(int _recvpin, key_data_t* _key_table, uint8_t _rows_in_keytable) {            
-            ir = new IRrecv(_recvpin);
-            state = KEY_NO;
-            lastButtonCode = -1;
-            key_table = _key_table;
-            //rows_in_keytable = size_of_keytable/sizeof(key_data_t);
-            rows_in_keytable = _rows_in_keytable;
-        }
+    ir = new IRrecv(_recvpin);
+    state = KEY_NO;
+    mode = RMODE_GENERATE;
+    lastButtonCode = -1;
+    key_table = _key_table;
+    keytable_init();
+    currentCapturedKeyIndex = 1;
+    //rows_in_keytable = size_of_keytable/sizeof(key_data_t);
+    rows_in_keytable = _rows_in_keytable;
+}
 
 
 // Поиск совпадения кода нажатой кнопки со значениями в таблице
@@ -42,7 +45,18 @@ void RemotePult::process() {
     if (ir->decode(&results)) {
         newButtonCode = results.value;
         //newButtonCode = ir->decodedIRData.decodedRawData;
-            
+
+        if (mode == RMODE_CAPTURE) { 
+            captureInputIRSignal();
+            return;
+        }
+
+        if (mode == RMODE_GENERATE) { 
+            generateOutputPinSignal();
+            //return;
+        }
+
+
         // Сохранение времени последнего прихода данных
         lastButtonTime = millis();
 
@@ -83,6 +97,15 @@ void RemotePult::process() {
             }
         }
     }
+}
+
+void RemotePult::generateOutputPinSignal() {
+    PRINT("#GENSIGON "); PRINTLN(newButtonCode);
+}
+
+void RemotePult::captureInputIRSignal() {
+    keytable_add_key(newButtonCode);
+    PRINT("#CAPTURED "); PRINTLN(newButtonCode);
 }
 
 void RemotePult::onButtonPressed(uint8_t button) {
