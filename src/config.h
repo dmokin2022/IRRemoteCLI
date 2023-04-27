@@ -15,6 +15,8 @@
 // Массив для слова команды
 #define MAX_SIMBOLS_IN_WORD 20
 
+#define AUTOREPEAT_PERIOD_MS 200
+
 
 
 #endif // USINGPINS_H_INCLUDED
