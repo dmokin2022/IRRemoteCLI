@@ -1,8 +1,8 @@
 //===========================================================
 // Описание всех используемых в устройстве ножек контроллера
 //===========================================================
-#ifndef USINGPINS_H_INCLUDED
-#define USINGPINS_H_INCLUDED
+#ifndef CONFIG_H_INCLUDED
+#define CONFIG_H_INCLUDED
 
 // Настройки командной строки
 #define MAX_COMMAND_STRING_SIZE 100
@@ -16,7 +16,5 @@
 #define IR_RECEIVER_PIN 2
 
 
-
-
-#endif // USINGPINS_H_INCLUDED
+#endif // CONFIG_H_INCLUDED
 //-------------------------------------------------------
