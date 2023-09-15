@@ -7,6 +7,7 @@ key_data_t key_table[MAX_KEYS_COUNT];
 uint8_t currentCapturedKeyIndex;    // индекс текущей позиции в таблице для записи кодов клавишь
 
 void keytable_output_item(uint8_t i) {
+    PRINT(i); PRINT(": ");
     PRINT("id = "); PRINT(key_table[i].id); PRINT(" ");
     //PRINT("code = "); PRINT(key_table[i].code); PRINT(" ");
     PRINT("code = "); keytable_output_hex(key_table[i].code); PRINT(" ");
@@ -92,5 +93,5 @@ void keytable_generate_name_for_key(uint8_t number) {
 }
 
 void keytable_output_hex(uint32_t code) {
-    Serial.println( code, HEX );
+    Serial.print( code, HEX );
 }
