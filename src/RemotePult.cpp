@@ -48,6 +48,7 @@ void RemotePult::process() {
 
         if (mode == RMODE_CAPTURE) { 
             captureInputIRSignal();
+            ir->resume(); // принимаем следующую команду
             return;
         }
 
@@ -100,12 +101,14 @@ void RemotePult::process() {
 }
 
 void RemotePult::generateOutputPinSignal() {
-    PRINT("#GENSIGON "); PRINTLN(newButtonCode);
+    PRINT("#GENSIGON "); 
+    keytable_output_hex(newButtonCode); PRINTLN();
 }
 
 void RemotePult::captureInputIRSignal() {
     keytable_add_key(newButtonCode);
-    PRINT("#CAPTURED "); PRINTLN(newButtonCode);
+    PRINT("#CAPTURED ");
+    keytable_output_hex(newButtonCode); PRINTLN();
 }
 
 void RemotePult::onButtonPressed(uint8_t button) {
@@ -168,3 +171,7 @@ void RemotePult::interpretateKeyActionByTableSettings(keyStates state, uint8_t b
     }
 }
 
+ void RemotePult::setMode(uint8_t _mode) {
+    this->mode = _mode;
+    debug(_mode);
+ }

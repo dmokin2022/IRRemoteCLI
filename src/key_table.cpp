@@ -4,7 +4,7 @@
 #include <EEPROM.h>
 
 key_data_t key_table[MAX_KEYS_COUNT];
-uint8_t currentCapturedKeyIndex;    // индекс текущей позиции в таблице для записи кодов клавишь
+uint8_t currentCapturedKeyIndex = 0;    // индекс текущей позиции в таблице для записи кодов клавишь
 
 void keytable_output_item(uint8_t i) {
     PRINT(i); PRINT(": ");
@@ -77,10 +77,10 @@ void keytable_add_key(uint32_t code) {
     if (currentCapturedKeyIndex < MAX_KEYS_COUNT) {
         keytable_set_default(currentCapturedKeyIndex);
         key_table[currentCapturedKeyIndex].code = code;
-        keytable_generate_name_for_key(currentCapturedKeyIndex);
-       
+        keytable_generate_name_for_key(currentCapturedKeyIndex);        
+        debug(currentCapturedKeyIndex);
+        PRINT("Key "); keytable_output_hex(code); PRINTLN(" is added to table");
         currentCapturedKeyIndex++;
-        PRINT("Key "); PRINT(code); PRINTLN(" is added to table");
     } else {
         PRINTLN("Key table is full. Delete any old key to add new one.");
     }

@@ -29,8 +29,9 @@ class RemotePult  {
         RemotePult (int recvpin);
     	RemotePult (int recvpin, int blinkpin);
         void process();
+        void setMode(uint8_t _mode);
 
-
+        //uint8_t mode;   // режим работы модуля пульта (захват/сканирование, генерация)
 
         IRrecv* ir;
     protected:

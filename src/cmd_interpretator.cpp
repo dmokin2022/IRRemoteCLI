@@ -40,6 +40,7 @@ void cmd_interpretate(CommandHandler_t* cmd)
 
 	//-----------------------------------------------------------------
 	if (EQUAL(COMMAND, "set")) {
+		key_table[button].id = button;
 		if (EQUAL(PARAMETER, "id")) { key_table[button].id = value; } else
 		if (EQUAL(PARAMETER, "code")) { key_table[button].code = value; } else
 		if (EQUAL(PARAMETER, "pin")) { key_table[button].pin = value; } else
@@ -77,13 +78,17 @@ void cmd_interpretate(CommandHandler_t* cmd)
 					MODE_HOLD: PRINTLN("hold"); break;
 				};
 			}
+
 		} else {
 			// Команда get без параметров (button = 0)
 			keytable_output_all();
 		}
 	} else
 	if (EQUAL(COMMAND, "capture") || EQUAL(COMMAND, "scan")) {
-
+		remotePult->setMode(RMODE_CAPTURE);
+	} else 
+	if (EQUAL(COMMAND, "gen") || EQUAL(COMMAND, "start")) {
+		remotePult->setMode(RMODE_GENERATE);
 	} else 
 	if (EQUAL(COMMAND, "save")) {
 		PRINT("Table size in bytes: ");
@@ -94,11 +99,11 @@ void cmd_interpretate(CommandHandler_t* cmd)
 	} else 
 	if (EQUAL(COMMAND, "load")) {
 		keytable_load_from_EEPROM();
-		PRINTLN("Table is loaded");
+		PRINTLN("Table is loaded from EEPROM");
 	} else
 	if (EQUAL(COMMAND, "reset")) {
 		keytable_reset();
-		PRINTLN("Table is cleared");
+		PRINTLN("Table is cleared in RAM");
 	} else 
 	
 	{
