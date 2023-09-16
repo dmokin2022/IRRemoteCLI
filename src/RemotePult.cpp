@@ -64,23 +64,29 @@ void RemotePult::process() {
         if (state == KEY_NO) {
             buttonPositionInTable = findPositionInTable(newButtonCode);
             if (buttonPositionInTable == NOT_FOUND) {
-
+                // Ничего не делает, если не находит кода кнопки в таблице
             } else {
                 state = KEY_PRESSED;
-                //debug(state);
-                onButtonPressed(buttonPositionInTable);
+                // debug(state);
+                // debug(buttonPositionInTable);
+                interpretateKeyActionByTableSettings(state, buttonPositionInTable);
+                //onButtonPressed(buttonPositionInTable);
                 lastButtonCode = newButtonCode;
             }
         } else if (state == KEY_PRESSED) {
             if ((newButtonCode == 0x0)) {
                 state = KEY_AUTOREPEAT;
-                //debug(state);                   
-                onButtonAutorepeat(buttonPositionInTable);
+                // debug(state);
+                // debug(buttonPositionInTable);
+                interpretateKeyActionByTableSettings(state, buttonPositionInTable);
+                //onButtonAutorepeat(buttonPositionInTable);
             }
         } else if (state == KEY_AUTOREPEAT) {
-            //debug(state);
+            // debug(state);
+            // debug(buttonPositionInTable);
             //debug(buttonPositionInTable);
-            onButtonAutorepeat(buttonPositionInTable);
+            interpretateKeyActionByTableSettings(state, buttonPositionInTable);
+            //onButtonAutorepeat(buttonPositionInTable);
         }
         ir->resume(); // принимаем следующую команду
     
@@ -90,9 +96,11 @@ void RemotePult::process() {
             timeEllapsed = millis() - lastButtonTime;
             if (timeEllapsed > AUTOREPEAT_PERIOD_MS) {
                 state = KEY_RELEASED;
-                //debug(state);
+                // debug(state);
+                // debug(buttonPositionInTable);
                 //debug(timeEllapsed);
-                onButtonReleased(buttonPositionInTable);
+                interpretateKeyActionByTableSettings(state, buttonPositionInTable);
+                //onButtonReleased(buttonPositionInTable);
                 state = KEY_NO;
                 //debug(state);
             }
@@ -101,7 +109,7 @@ void RemotePult::process() {
 }
 
 void RemotePult::generateOutputPinSignal() {
-    PRINT("#GENSIGON "); 
+    PRINT("#GENSIG"); 
     keytable_output_hex(newButtonCode); PRINTLN();
 }
 
@@ -140,11 +148,14 @@ void RemotePult::onButtonAutorepeat(uint8_t button) {
 
 // Интерпретация нажатия кнопки (разные действия в зависимости типа кнопки заданного в табице)
 void RemotePult::interpretateKeyActionByTableSettings(keyStates state, uint8_t button) {
+    debug(state);
+    //debug(button);
+    
     if (key_table[button].mode == MODE_TOGGLE) {
         if (state == KEY_PRESSED) {
             pin_toggle(key_table[button].pin, key_table[button].var_val);
         }
-    }
+    } else
 
     if (key_table[button].mode == MODE_HOLD) {
         if (state == KEY_AUTOREPEAT) {           
@@ -167,7 +178,10 @@ void RemotePult::interpretateKeyActionByTableSettings(keyStates state, uint8_t b
 
         } else if (state == KEY_RELEASED) {
             pin_off(key_table[button].pin);
+        } else if (state == KEY_PRESSED) {
+            pin_on(key_table[button].pin);
         }
+
     }
 }
 
