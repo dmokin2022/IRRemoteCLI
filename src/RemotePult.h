@@ -21,6 +21,9 @@ enum receiverModes {
 
 #define NOT_FOUND -1
 
+#define AUTOREPEAT_CODE1 0x0
+#define AUTOREPEAT_CODE2 0xFFFFFFFF
+
 //class RemotePult: public IRrecv  {
 class RemotePult  {    
     public:

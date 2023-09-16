@@ -45,7 +45,6 @@ void RemotePult::process() {
     if (ir->decode(&results)) {
         newButtonCode = results.value;
         //newButtonCode = ir->decodedIRData.decodedRawData;
-
         if (mode == RMODE_CAPTURE) { 
             captureInputIRSignal();
             ir->resume(); // принимаем следующую команду
@@ -74,7 +73,7 @@ void RemotePult::process() {
                 lastButtonCode = newButtonCode;
             }
         } else if (state == KEY_PRESSED) {
-            if ((newButtonCode == 0x0)) {
+            if ((newButtonCode == AUTOREPEAT_CODE1) | (newButtonCode == AUTOREPEAT_CODE2)) {
                 state = KEY_AUTOREPEAT;
                 // debug(state);
                 // debug(buttonPositionInTable);
@@ -109,7 +108,7 @@ void RemotePult::process() {
 }
 
 void RemotePult::generateOutputPinSignal() {
-    PRINT("#GENSIG"); 
+    PRINT("#GENSIG "); 
     keytable_output_hex(newButtonCode); PRINTLN();
 }
 
@@ -151,37 +150,39 @@ void RemotePult::interpretateKeyActionByTableSettings(keyStates state, uint8_t b
     debug(state);
     //debug(button);
     
-    if (key_table[button].mode == MODE_TOGGLE) {
+    uint8_t mode = key_table[button].mode;
+
+    if (mode == MODE_TOGGLE) {
         if (state == KEY_PRESSED) {
             pin_toggle(key_table[button].pin, key_table[button].var_val);
         }
     } else
 
-    if (key_table[button].mode == MODE_HOLD) {
-        if (state == KEY_AUTOREPEAT) {           
-            int16_t *var;
-            uint8_t pin;
-            // Если определена индексная ссылка на переменную
-            if (key_table[button].var_ref) {
-                // Получение ссылки на переменную
-                var = &key_table[key_table[button].var_ref].var_val;
-                pin = key_table[key_table[button].var_ref].pin;
-            // Если ссылка не определена...
-            } else {
-                // ...то используется собственная переменная
-                var = &key_table[button].var_val;
-                pin = key_table[button].pin;
-            }
-
-            *var += key_table[button].var_step;
-            pin_pwm(pin, (uint16_t) *var);
-
-        } else if (state == KEY_RELEASED) {
+    if (mode == MODE_HOLD) {
+        if (state == KEY_RELEASED) {
             pin_off(key_table[button].pin);
         } else if (state == KEY_PRESSED) {
             pin_on(key_table[button].pin);
         }
+    }
 
+    if (mode == MODE_REPEAT) {           
+        int16_t *var;
+        uint8_t pin;
+        // Если определена индексная ссылка на переменную
+        if (key_table[button].var_ref) {
+            // Получение ссылки на переменную
+            var = &key_table[key_table[button].var_ref].var_val;
+            pin = key_table[key_table[button].var_ref].pin;
+            
+        // Если ссылка не определена...
+        } else {
+            // ...то используется собственная переменная
+            var = &key_table[button].var_val;
+            pin = key_table[button].pin;
+        }
+        *var += key_table[button].var_step;
+        pin_pwm(pin, (uint16_t) *var);
     }
 }
 

@@ -94,7 +94,7 @@ void cmd_interpretate(CommandHandler_t* cmd)
 		PRINT("Table size in bytes: ");
 		PRINTLN(sizeof(key_table));
 		keytable_save_to_EEPROM();
-		PRINTLN("Table is saved");
+		PRINTLN("Table is saved to EEPROM");
  
 	} else 
 	if (EQUAL(COMMAND, "load")) {
